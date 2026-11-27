@@ -78,6 +78,35 @@ class GitHubAccountBinding(Model):
     github_login: Mapped[str] = mapped_column(String(255))
 
 
+class GitHubReviewWatch(Model):
+    __tablename__ = "github_review_watch"
+
+    repository_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    pull_number: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    owner: Mapped[str] = mapped_column(String)
+    repo: Mapped[str] = mapped_column(String)
+    app_id: Mapped[str] = mapped_column(String)
+    installation_id: Mapped[int] = mapped_column(BigInteger)
+    first_requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_review_submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    has_activity: Mapped[bool] = mapped_column(default=False)
+    has_volunteer: Mapped[bool] = mapped_column(default=False)
+    finished: Mapped[bool] = mapped_column(default=False)
+
+
+class GitHubReviewReminder(Model):
+    __tablename__ = "github_review_reminder"
+
+    repository_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    pull_number: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    reviewer_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    reviewer_login: Mapped[str] = mapped_column(String)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    requester: Mapped[str] = mapped_column(String)
+    warnings: Mapped[int] = mapped_column(default=0)
+    active: Mapped[bool] = mapped_column(default=True)
+
+
 class Finding(BaseModel):
     file: str
     side: Literal["LEFT", "RIGHT"] = "RIGHT"

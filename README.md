@@ -24,6 +24,18 @@ Run `LOG_LEVEL=INFO nb orm upgrade` before restarting the bot, and route `GET /g
 
 Send `/ghbind` to the bot in a OneBot private chat. The link expires after 10 minutes and can be used once. The OAuth App requests an empty scope and reads the authenticated user's GitHub ID and login. The database stores these values with the initiating QQ ID. A successful authorization can update that QQ user's binding, and each GitHub ID can belong to only one QQ account.
 
+## GitHub notifications and review timeouts
+
+The bot sends OneBot private messages for issue and PR assignments, and for individual PR review requests. Recipients must have a GitHub account linked with `/ghbind`. If more than one OneBot account is connected, set `github_notification_onebot_id` to the account that should send these messages.
+
+- Pending reviewers get reminders at 12:00 and 19:00 UTC+8 during the first 24 hours of each request. A review response or withdrawal of the request stops that reviewer's reminders.
+- After 24 hours without a response, the bot comments on the PR and suggests another reviewer. Each new review request starts its own 24-hour reminder period.
+- A PR becomes eligible for automatic approval after individual review requests have been sent to at least two distinct developers in `project_assignment_developers` in the current round. The latest request to a configured developer starts a 24-hour countdown. A later request restarts the countdown. Before approving, the bot checks that the latest request is still pending and that the PR is open and out of draft.
+- A requested reviewer or a configured developer who intervenes cancels automatic approval. If a configured developer who was never requested intervenes through a public PR comment or review, the original reviewers keep their reminders and the timeout comment omits the suggestion to find someone else.
+- After a requested reviewer or a configured developer submits a review, the next individual review request starts a new round. Earlier requests stop generating reminders and their reviewers no longer count toward the two-developer threshold. The bot writes timeout comments and automatic approval messages on GitHub in English.
+
+GitHub only exposes public review activity to the bot. A private draft review becomes visible after it is submitted. Apply the ORM migration before enabling these jobs.
+
 ## Review provider configuration
 
 - `provider: str | None = "deepseek"` selects a built-in Pydantic AI provider and its model implementation.
