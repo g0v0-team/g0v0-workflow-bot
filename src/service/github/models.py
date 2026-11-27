@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 class ReviewConfig(BaseModel):
+    review_enabled: bool = True
     provider: str | None = "deepseek"
     review_base_url: str | None = None
     review_model: str = "deepseek-flash"

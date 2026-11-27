@@ -38,10 +38,11 @@ GitHub only exposes public review activity to the bot. A private draft review be
 
 ## Review provider configuration
 
+- `review_enabled` defaults to `true`. Set `review_enabled=false` and restart the bot to disable automatic AI reviews, the `/review` command, and processing of queued AI reviews. Pending jobs can resume when the feature is enabled again. GitHub notifications and review reminders are controlled separately.
 - `provider: str | None = "deepseek"` selects a built-in Pydantic AI provider and its model implementation.
 - `review_base_url: str | None = None` overrides `provider` when supplied, using an OpenAI-compatible endpoint.
 - `review_api_key` is passed to the selected provider. When omitted for a built-in provider, its normal environment-based authentication is used.
-- If both `provider` and `review_base_url` are `None`, startup fails before review queues are restored.
+- When AI review is enabled, startup requires either `provider` or `review_base_url`.
 - `review_request_limit` defaults to 1000 requests per iteration. The cumulative request limit is `review_request_limit × review_iteration` (1000 for iteration 1, 2000 for iteration 2, etc.), and historical request usage counts toward that cumulative limit. A positive integer changes the per-iteration allowance; `None` disables the limit.
 
 For the built-in DeepSeek provider, leave `review_base_url` unset:
