@@ -5,7 +5,7 @@ from nonebot_plugin_orm import Model
 from pydantic import BaseModel, Field
 from pydantic_ai import RunUsage
 from pydantic_ai.settings import ThinkingLevel
-from sqlalchemy import BigInteger, Text
+from sqlalchemy import BigInteger, DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 
@@ -59,6 +59,23 @@ class ReviewQueueItem(Model):
     status: Mapped[str] = mapped_column(default="pending", index=True)
     priority: Mapped[int] = mapped_column(default=1)
     queued_notified: Mapped[bool] = mapped_column(default=False)
+
+
+class GitHubOAuthState(Model):
+    __tablename__ = "github_oauth_state"
+
+    qq_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    state_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    verifier: Mapped[str] = mapped_column(String(128))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
+class GitHubAccountBinding(Model):
+    __tablename__ = "github_account_binding"
+
+    qq_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    github_id: Mapped[int] = mapped_column(BigInteger, unique=True)
+    github_login: Mapped[str] = mapped_column(String(255))
 
 
 class Finding(BaseModel):

@@ -10,6 +10,20 @@ Project assignment is enabled by default for `g0v0-team` Project 6. The GitHub A
 
 Use `project_assignment_enabled=false` to disable this integration. The project and roster can be configured with `project_assignment_owner`, `project_assignment_number`, and `project_assignment_developers`. The per-developer single-select fields in the project must have the same names as the configured GitHub logins.
 
+## GitHub account binding
+
+Register a dedicated GitHub OAuth App with `<github_oauth_base_url>/gh-oauth` as its authorization callback URL. The default callback is `https://example.com/gh-oauth`. Set these values in the deployed bot's environment.
+
+```dotenv
+github_oauth_client_id=your_oauth_app_client_id
+github_oauth_client_secret=your_oauth_app_client_secret
+github_oauth_base_url=https://example.com
+```
+
+Run `LOG_LEVEL=INFO nb orm upgrade` before restarting the bot, and route `GET /gh-oauth` through the HTTPS reverse proxy to the bot. Set the deployment log level to `INFO` and omit callback query parameters from access logs.
+
+Send `/ghbind` to the bot in a OneBot private chat. The link expires after 10 minutes and can be used once. The OAuth App requests an empty scope and reads the authenticated user's GitHub ID and login. The database stores these values with the initiating QQ ID. A successful authorization can update that QQ user's binding, and each GitHub ID can belong to only one QQ account.
+
 ## Review provider configuration
 
 - `provider: str | None = "deepseek"` selects a built-in Pydantic AI provider and its model implementation.
